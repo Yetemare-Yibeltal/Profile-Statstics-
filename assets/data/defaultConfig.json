@@ -1,0 +1,13 @@
+{
+  "appName": "Profile-Statistics Dashboard",
+  "version": "2.0.0",
+  "apiEndpoints": {
+    "metrics": "/api/v1/metrics",
+    "user": "/api/v1/user"
+  },
+  "features": {
+    "enableThemeToggle": true,
+    "enableRealtimeSync": false,
+    "maxHistoryDays": 30
+  }
+}
