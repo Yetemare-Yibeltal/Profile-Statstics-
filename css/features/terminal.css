@@ -1,0 +1,71 @@
+.terminal-card {
+  background-color: #090d16;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-family: monospace;
+  overflow: hidden;
+}
+
+.terminal-header {
+  background-color: var(--bg-secondary);
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.terminal-dot.red {
+  background-color: #f87171;
+}
+.terminal-dot.yellow {
+  background-color: #fbbf24;
+}
+.terminal-dot.green {
+  background-color: #4ade80;
+}
+
+.terminal-title {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.terminal-body {
+  padding: 1rem;
+  height: 180px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.term-line {
+  font-size: 0.85rem;
+  color: #38bdf8;
+}
+
+.terminal-input-row {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid var(--border-color);
+  gap: 0.5rem;
+}
+
+.terminal-input-row input {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-family: monospace;
+  font-size: 0.85rem;
+  width: 100%;
+  outline: none;
+}
