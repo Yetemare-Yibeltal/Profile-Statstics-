@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Metages Yibeltal - Full Stack Software Engineer Portfolio</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components/navbar.css" />
+  <link rel="stylesheet" href="css/components/cards.css" />
+  <link rel="stylesheet" href="css/views/portfolio.css" />
+  <link rel="stylesheet" href="css/features/radar.css" />
+  <link rel="stylesheet" href="css/features/toast.css" />
+</head>
+<body>
+  <div id="app-header-root"></div>
+  <main class="main-content">
+    <section class="portfolio-hero">
+      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80" alt="Metages Yibeltal" />
+      <div class="portfolio-bio">
+        <h1>Metages Yibeltal</h1>
+        <p>Full-Stack Software Engineer & Web Systems Architect specializing in robust web applications, responsive architectures, and data-driven systems.</p>
+        <button id="export-portfolio-btn" style="margin-top: 1rem; background: var(--accent-blue); color: #0f172a; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600;">📥 Export Portfolio JSON</button>
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <div id="radar-container"></div>
+      <div class="stat-card" style="display: flex; flex-direction: column; justify-content: center; gap: 1rem;">
+        <h3 class="widget-title">System Activity Status</h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">All core backend microservices and databases are operating at peak efficiency with zero recorded packet latency.</p>
+        <span style="color: var(--accent-green); font-weight: 600; font-size: 0.85rem;">● Production Deployment Active</span>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initTheme } from './js/core/theme.js';
+    import { renderHeader } from './js/components/Header.js';
+    import { renderSkillRadar } from './js/features/radarChart.js';
+    import { handlePortfolioExport } from './js/features/portfolioExport.js';
+    import { userProfile } from './js/data/userData.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderHeader(document.getElementById('app-header-root'));
+      renderSkillRadar(document.getElementById('radar-container'));
+
+      document.getElementById('export-portfolio-btn').addEventListener('click', () => {
+        handlePortfolioExport(userProfile);
+      });
+    });
+  </script>
+</body>
+</html>
