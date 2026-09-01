@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects Showcase - Metages Yibeltal</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components/navbar.css" />
+  <link rel="stylesheet" href="css/components/cards.css" />
+  <link rel="stylesheet" href="css/components/footer.css" />
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+  <div id="app-header-root"></div>
+  
+  <main class="main-content" style="flex: 1;">
+    <h1 class="dashboard-title" style="margin-bottom: 0.5rem;">Engineering Projects</h1>
+    <p class="dashboard-subtitle" style="margin-bottom: 2rem;">Explore full-stack software applications and web systems developed by Metages.</p>
+    
+    <div class="grid-3" id="projects-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+      <div class="stat-card">
+        <h3>Sana Queue</h3>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">Patient queue management system built with FastAPI, React, and MongoDB.</p>
+        <span style="display: inline-block; margin-top: 1rem; color: var(--accent-blue); font-size: 0.8rem; font-weight: 600;">FastAPI • React • MongoDB</span>
+      </div>
+      <div class="stat-card">
+        <h3>Kidus Yared Hospital</h3>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">Comprehensive healthcare administration platform and clinical workflow digitizer.</p>
+        <span style="display: inline-block; margin-top: 1rem; color: var(--accent-purple); font-size: 0.8rem; font-weight: 600;">Node.js • Express • MySQL</span>
+      </div>
+      <div class="stat-card">
+        <h3>Profile Statistics</h3>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">Enterprise developer analytics dashboard tracking live GitHub statistics.</p>
+        <span style="display: inline-block; margin-top: 1rem; color: var(--accent-green); font-size: 0.8rem; font-weight: 600;">JavaScript • REST API • CSS</span>
+      </div>
+    </div>
+  </main>
+
+  <div id="app-footer-root"></div>
+
+  <script type="module">
+    import { initTheme } from './js/core/theme.js';
+    import { renderHeader } from './js/components/Header.js';
+    import { renderFooter } from './js/components/Footer.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderHeader(document.getElementById('app-header-root'));
+      renderFooter(document.getElementById('app-footer-root'));
+    });
+  </script>
+</body>
+</html>
