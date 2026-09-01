@@ -1,0 +1,28 @@
+.portfolio-hero {
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.portfolio-hero img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-blue);
+}
+
+.portfolio-bio h1 {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.portfolio-bio p {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+}
