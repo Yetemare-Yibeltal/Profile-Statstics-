@@ -1,0 +1,19 @@
+#command-palette-modal .modal-content {
+  border-top: 4px solid var(--accent-purple);
+}
+
+.cmd-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-weight: 500;
+  transition: background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.cmd-link:hover {
+  background-color: var(--accent-blue);
+  color: #0f172a;
+}
