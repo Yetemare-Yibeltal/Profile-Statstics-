@@ -1,0 +1,25 @@
+{
+  "featuredProjects": [
+    {
+      "id": "proj_1",
+      "title": "Sana Queue",
+      "description": "Patient queue management system built with FastAPI, React, and MongoDB.",
+      "tech": ["FastAPI", "React", "MongoDB"],
+      "status": "Active"
+    },
+    {
+      "id": "proj_2",
+      "title": "Kidus Yared Hospital System",
+      "description": "Comprehensive healthcare administration platform and clinical workflow digitizer.",
+      "tech": ["Node.js", "Express", "MySQL"],
+      "status": "Production"
+    },
+    {
+      "id": "proj_3",
+      "title": "Profile Statistics Dashboard",
+      "description": "Enterprise developer analytics dashboard tracking live GitHub statistics and metrics.",
+      "tech": ["JavaScript", "CSS Grid", "REST API"],
+      "status": "Active"
+    }
+  ]
+}
