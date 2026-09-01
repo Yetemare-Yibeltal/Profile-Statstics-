@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Metages Yibeltal - Developer Platform & Profile Statistics</title>
+  <title>Metages Yibeltal - Developer Platform</title>
   
   <!-- Core Stylesheets -->
   <link rel="stylesheet" href="css/main.css" />
@@ -12,40 +12,68 @@
   <link rel="stylesheet" href="css/components/tables.css" />
   <link rel="stylesheet" href="css/components/footer.css" />
   
-  <!-- Advanced Feature Stylesheets -->
+  <!-- Feature Stylesheets -->
   <link rel="stylesheet" href="css/features/commandPalette.css" />
   <link rel="stylesheet" href="css/features/heatmap.css" />
   <link rel="stylesheet" href="css/features/terminal.css" />
   <link rel="stylesheet" href="css/features/timeline.css" />
+  <link rel="stylesheet" href="css/features/playground.css" />
 </head>
-<body style="display: flex; flex-direction: column; min-height: 100vh;">
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
   
-  <!-- Global Application Header -->
+  <!-- Global Header -->
   <div id="app-header-root"></div>
 
-  <!-- Main Content Dashboard -->
+  <!-- Main Content Area -->
   <main class="main-content" style="flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem;">
     
-    <!-- Dynamic Router View Root -->
-    <div id="main-content-view">
-      <div style="padding: 2rem; text-align: center; color: var(--text-secondary);">Initializing dashboard analytics...</div>
-    </div>
+    <div id="main-content-view"></div>
 
-    <!-- Advanced Feature Sections Grid -->
+    <!-- Non-GitHub Feature Widgets Grid -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
-      <div id="heatmap-container-root"></div>
-      <div id="terminal-container-root"></div>
+      <div id="playground-container-root"></div>
+      <div id="skills-container-root"></div>
     </div>
 
-    <!-- Experience Timeline Section -->
-    <div id="timeline-container-root" style="margin-top: 1rem;"></div>
+    <div id="heatmap-container-root"></div>
+    <div id="terminal-container-root"></div>
+    <div id="timeline-container-root"></div>
 
   </main>
 
-  <!-- Global Application Footer -->
+  <!-- Global Footer (Always Last) -->
   <div id="app-footer-root"></div>
 
-  <!-- Application Bootstrap Script -->
-  <script type="module" src="js/core/app.js"></script>
+  <!-- Bootstrap Script -->
+  <script type="module">
+    import { initTheme } from './js/core/theme.js';
+    import { renderHeader } from './js/components/Header.js';
+    import { renderFooter } from './js/components/Footer.js';
+    import { renderCodePlayground } from './js/features/playground/codePlayground.js';
+    import { renderSkillMatrix } from './js/features/skills/skillMatrix.js';
+    import { renderContributionHeatmap } from './js/features/heatmap/contributionMatrix.js';
+    import { renderTerminalSimulator } from './js/features/terminal/terminalSimulator.js';
+    import { renderExperienceTimeline } from './js/features/timeline/experienceTimeline.js';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      initTheme();
+      renderHeader(document.getElementById('app-header-root'));
+      renderFooter(document.getElementById('app-footer-root'));
+
+      // Mount non-GitHub & advanced features
+      renderCodePlayground(document.getElementById('playground-container-root'));
+      renderSkillMatrix(document.getElementById('skills-container-root'));
+      renderContributionHeatmap(document.getElementById('heatmap-container-root'));
+      renderTerminalSimulator(document.getElementById('terminal-container-root'));
+
+      try {
+        const res = await fetch('assets/data/experienceData.json');
+        const data = await res.json();
+        renderExperienceTimeline(document.getElementById('timeline-container-root'), data.milestones);
+      } catch (e) {
+        console.warn('Timeline load error', e);
+      }
+    });
+  </script>
 </body>
 </html>
