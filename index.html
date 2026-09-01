@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Metages Yibeltal - Developer Platform</title>
+  <title>Metages Yibeltal - Developer Platform & Profile Statistics</title>
   
   <!-- Core Stylesheets -->
   <link rel="stylesheet" href="css/main.css" />
@@ -21,12 +21,13 @@
 </head>
 <body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
   
-  <!-- Global Header -->
+  <!-- Global Application Header -->
   <div id="app-header-root"></div>
 
   <!-- Main Content Area -->
   <main class="main-content" style="flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem;">
     
+    <!-- Restored GitHub Analytics Dashboard View -->
     <div id="main-content-view"></div>
 
     <!-- Non-GitHub Feature Widgets Grid -->
@@ -35,20 +36,26 @@
       <div id="skills-container-root"></div>
     </div>
 
-    <div id="heatmap-container-root"></div>
-    <div id="terminal-container-root"></div>
+    <!-- Heatmap & Terminal Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+      <div id="heatmap-container-root"></div>
+      <div id="terminal-container-root"></div>
+    </div>
+
+    <!-- Experience Timeline -->
     <div id="timeline-container-root"></div>
 
   </main>
 
-  <!-- Global Footer (Always Last) -->
+  <!-- Global Application Footer (Permanently at bottom) -->
   <div id="app-footer-root"></div>
 
-  <!-- Bootstrap Script -->
+  <!-- Application Bootstrap Script -->
   <script type="module">
     import { initTheme } from './js/core/theme.js';
     import { renderHeader } from './js/components/Header.js';
     import { renderFooter } from './js/components/Footer.js';
+    import { renderDashboard } from './js/views/DashboardView.js';
     import { renderCodePlayground } from './js/features/playground/codePlayground.js';
     import { renderSkillMatrix } from './js/features/skills/skillMatrix.js';
     import { renderContributionHeatmap } from './js/features/heatmap/contributionMatrix.js';
@@ -60,12 +67,16 @@
       renderHeader(document.getElementById('app-header-root'));
       renderFooter(document.getElementById('app-footer-root'));
 
-      // Mount non-GitHub & advanced features
+      // 1. Mount the GitHub Analytics Dashboard view
+      await renderDashboard(document.getElementById('main-content-view'));
+
+      // 2. Mount expanded features
       renderCodePlayground(document.getElementById('playground-container-root'));
       renderSkillMatrix(document.getElementById('skills-container-root'));
       renderContributionHeatmap(document.getElementById('heatmap-container-root'));
       renderTerminalSimulator(document.getElementById('terminal-container-root'));
 
+      // 3. Load experience timeline data
       try {
         const res = await fetch('assets/data/experienceData.json');
         const data = await res.json();
