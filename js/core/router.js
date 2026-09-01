@@ -1,5 +1,5 @@
 /**
- * Simple client-side view router
+ * Fully functional asynchronous client-side router
  */
 
 import { renderDashboard } from "../views/DashboardView.js";
@@ -10,14 +10,15 @@ const routes = {
   "/analytics": renderAnalytics,
 };
 
-export const initRouter = (mainContainer) => {
-  const navigate = () => {
+export const initRouter = async (mainContainer) => {
+  const navigate = async () => {
     const path = window.location.hash.slice(1) || "/";
     const view = routes[path] || renderDashboard;
-    mainContainer.innerHTML = "";
-    view(mainContainer);
+    mainContainer.innerHTML =
+      '<div style="padding: 2rem; text-align: center; color: var(--text-secondary);">Loading view...</div>';
+    await view(mainContainer);
   };
 
   window.addEventListener("hashchange", navigate);
-  navigate();
+  await navigate();
 };
