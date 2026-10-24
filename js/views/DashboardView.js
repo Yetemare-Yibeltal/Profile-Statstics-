@@ -1,29 +1,34 @@
 /**
- * Fully functional dashboard controller connected to GitHub API
+ * Dynamic Dashboard View Controller
  */
 
 import { fetchLiveGitHubProfile } from "../services/githubApi.js";
 import { createStatCard } from "../components/StatCard.js";
 import { showToast } from "../features/toast.js";
 
-export const renderDashboard = async (rootElement) => {
+export const renderDashboard = async (
+  rootElement,
+  targetUsername = "Yetemare-Yibeltal",
+) => {
   rootElement.className = "dashboard-view";
   rootElement.innerHTML = `
     <div class="dashboard-header">
       <div>
-        <h1 class="dashboard-title">Live GitHub Analytics</h1>
-        <p class="dashboard-subtitle">Synchronized with @Yetemare-Yibeltal</p>
+        <h1 class="dashboard-title" id="active-user-title">Live GitHub Analytics: @${targetUsername}</h1>
+        <p class="dashboard-subtitle">Fetching live repository data and metrics directly from GitHub REST API</p>
       </div>
       <button id="refresh-data-btn" style="background: var(--accent-blue); color: #0f172a; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600;">🔄 Sync Live Data</button>
     </div>
+    
     <div class="grid-4" id="stats-grid">
       <div class="stat-card">Loading live stats...</div>
     </div>
+    
     <div class="grid-2">
       <div class="chart-container">
-        <h3 class="widget-title">Live Repositories & Activity</h3>
+        <h3 class="widget-title">Public Repositories</h3>
         <div id="repos-list" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 280px; overflow-y: auto;">
-          <p style="color: var(--text-secondary);">Fetching repositories...</p>
+          <p style="color: var(--text-secondary);">Fetching repository list...</p>
         </div>
       </div>
       <div class="chart-container">
@@ -35,37 +40,39 @@ export const renderDashboard = async (rootElement) => {
     </div>
   `;
 
-  const loadData = async () => {
-    showToast("Syncing with GitHub API...", "info");
-    const data = await fetchLiveGitHubProfile();
+  const loadUserData = async () => {
+    const data = await fetchLiveGitHubProfile(targetUsername);
 
-    // Render Stats
+    // Update Header Avatar and Title dynamically
+    const headerAvatar = document.getElementById("header-avatar");
+    const headerUsername = document.getElementById("header-username");
+    if (headerAvatar) headerAvatar.src = data.profile.avatar;
+    if (headerUsername) headerUsername.textContent = data.profile.name;
+
+    // Render Metric Cards
     const statsGrid = document.getElementById("stats-grid");
     statsGrid.innerHTML = "";
     statsGrid.appendChild(
-      createStatCard(
-        "Public Repositories",
-        data.profile.publicRepos,
-        14.2,
-        "📂",
-      ),
+      createStatCard("Public Repositories", data.profile.publicRepos, 0, "📂"),
     );
     statsGrid.appendChild(
-      createStatCard("Total GitHub Stars", data.profile.totalStars, 8.5, "⭐"),
+      createStatCard("Total Stars", data.profile.totalStars, 0, "⭐"),
     );
     statsGrid.appendChild(
-      createStatCard("Followers", data.profile.followers, 5.0, "👥"),
+      createStatCard("Followers", data.profile.followers, 0, "👥"),
     );
-    statsGrid.appendChild(createStatCard("Active Connections", 12, 2.1, "⚡"));
+    statsGrid.appendChild(
+      createStatCard("Following", data.profile.following || 0, 0, "🔗"),
+    );
 
-    // Render Repositories
+    // Render Repositories List
     const reposList = document.getElementById("repos-list");
     if (data.repos && data.repos.length > 0) {
       reposList.innerHTML = data.repos
         .slice(0, 6)
         .map(
           (repo) => `
-        <a href="${repo.url}" target="_blank" class="repo-item-card" style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--bg-primary); border-radius: var(--radius-sm); border: 1px solid var(--border-color); transition: border-color 0.2s;">
+        <a href="${repo.url}" target="_blank" class="repo-item-card" style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--bg-primary); border-radius: var(--radius-sm); border: 1px solid var(--border-color); text-decoration: none;">
           <div>
             <strong style="color: var(--accent-blue);">${repo.name}</strong>
             <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">${repo.description.substring(0, 60)}...</p>
@@ -79,35 +86,44 @@ export const renderDashboard = async (rootElement) => {
         )
         .join("");
     } else {
-      reposList.innerHTML = "<p>No repositories found or rate limited.</p>";
+      reposList.innerHTML = `<p style="color: var(--text-secondary);">No public repositories found for @${targetUsername}.</p>`;
     }
 
-    // Render Languages
+    // Render Languages breakdown
     const langContainer = document.getElementById("languages-breakdown");
-    langContainer.innerHTML = data.languages
-      .map(
-        (lang) => `
-      <div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;">
-          <span style="font-weight: 500; color: var(--text-primary);">${lang.name}</span>
-          <span style="color: var(--text-secondary);">${lang.percentage}%</span>
+    if (data.languages && data.languages.length > 0) {
+      langContainer.innerHTML = data.languages
+        .map(
+          (lang) => `
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;">
+            <span style="font-weight: 500; color: var(--text-primary);">${lang.name}</span>
+            <span style="color: var(--text-secondary);">${lang.percentage}%</span>
+          </div>
+          <div style="height: 8px; background: var(--bg-primary); border-radius: 4px; overflow: hidden;">
+            <div style="width: ${lang.percentage}%; height: 100%; background-color: ${lang.color};"></div>
+          </div>
         </div>
-        <div style="height: 8px; background: var(--bg-primary); border-radius: 4px; overflow: hidden;">
-          <div style="width: ${lang.percentage}%; height: 100%; background-color: ${lang.color};"></div>
-        </div>
-      </div>
-    `,
-      )
-      .join("");
+      `,
+        )
+        .join("");
+    } else {
+      langContainer.innerHTML =
+        '<p style="color: var(--text-secondary);">No language breakdown available.</p>';
+    }
 
-    showToast("GitHub data successfully synchronized!", "success");
+    showToast(
+      `Successfully loaded statistics for @${targetUsername}`,
+      "success",
+    );
   };
 
-  await loadData();
+  await loadUserData();
 
   document
     .getElementById("refresh-data-btn")
     .addEventListener("click", async () => {
-      await loadData();
+      showToast(`Re-syncing data for @${targetUsername}...`, "info");
+      await loadUserData();
     });
 };
