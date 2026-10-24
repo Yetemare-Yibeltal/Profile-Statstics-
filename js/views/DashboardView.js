@@ -10,6 +10,12 @@ export const renderDashboard = async (
   rootElement,
   targetUsername = "Yetemare-Yibeltal",
 ) => {
+  // Safeguard: check if root element exists
+  if (!rootElement) {
+    console.warn("Dashboard root element not found in the DOM.");
+    return;
+  }
+
   rootElement.className = "dashboard-view";
   rootElement.innerHTML = `
     <div class="dashboard-header">
@@ -43,73 +49,80 @@ export const renderDashboard = async (
   const loadUserData = async () => {
     const data = await fetchLiveGitHubProfile(targetUsername);
 
-    // Update Header Avatar and Title dynamically
     const headerAvatar = document.getElementById("header-avatar");
     const headerUsername = document.getElementById("header-username");
     if (headerAvatar) headerAvatar.src = data.profile.avatar;
     if (headerUsername) headerUsername.textContent = data.profile.name;
 
-    // Render Metric Cards
     const statsGrid = document.getElementById("stats-grid");
-    statsGrid.innerHTML = "";
-    statsGrid.appendChild(
-      createStatCard("Public Repositories", data.profile.publicRepos, 0, "📂"),
-    );
-    statsGrid.appendChild(
-      createStatCard("Total Stars", data.profile.totalStars, 0, "⭐"),
-    );
-    statsGrid.appendChild(
-      createStatCard("Followers", data.profile.followers, 0, "👥"),
-    );
-    statsGrid.appendChild(
-      createStatCard("Following", data.profile.following || 0, 0, "🔗"),
-    );
-
-    // Render Repositories List
-    const reposList = document.getElementById("repos-list");
-    if (data.repos && data.repos.length > 0) {
-      reposList.innerHTML = data.repos
-        .slice(0, 6)
-        .map(
-          (repo) => `
-        <a href="${repo.url}" target="_blank" class="repo-item-card" style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--bg-primary); border-radius: var(--radius-sm); border: 1px solid var(--border-color); text-decoration: none;">
-          <div>
-            <strong style="color: var(--accent-blue);">${repo.name}</strong>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">${repo.description.substring(0, 60)}...</p>
-          </div>
-          <div style="text-align: right; font-size: 0.8rem; color: var(--text-muted);">
-            <span>⭐ ${repo.stars}</span><br/>
-            <span>${repo.language}</span>
-          </div>
-        </a>
-      `,
-        )
-        .join("");
-    } else {
-      reposList.innerHTML = `<p style="color: var(--text-secondary);">No public repositories found for @${targetUsername}.</p>`;
+    if (statsGrid) {
+      statsGrid.innerHTML = "";
+      statsGrid.appendChild(
+        createStatCard(
+          "Public Repositories",
+          data.profile.publicRepos,
+          0,
+          "📂",
+        ),
+      );
+      statsGrid.appendChild(
+        createStatCard("Total Stars", data.profile.totalStars, 0, "⭐"),
+      );
+      statsGrid.appendChild(
+        createStatCard("Followers", data.profile.followers, 0, "👥"),
+      );
+      statsGrid.appendChild(
+        createStatCard("Following", data.profile.following || 0, 0, "🔗"),
+      );
     }
 
-    // Render Languages breakdown
+    const reposList = document.getElementById("repos-list");
+    if (reposList) {
+      if (data.repos && data.repos.length > 0) {
+        reposList.innerHTML = data.repos
+          .slice(0, 6)
+          .map(
+            (repo) => `
+          <a href="${repo.url}" target="_blank" class="repo-item-card" style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--bg-primary); border-radius: var(--radius-sm); border: 1px solid var(--border-color); text-decoration: none;">
+            <div>
+              <strong style="color: var(--accent-blue);">${repo.name}</strong>
+              <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">${repo.description.substring(0, 60)}...</p>
+            </div>
+            <div style="text-align: right; font-size: 0.8rem; color: var(--text-muted);">
+              <span>⭐ ${repo.stars}</span><br/>
+              <span>${repo.language}</span>
+            </div>
+          </a>
+        `,
+          )
+          .join("");
+      } else {
+        reposList.innerHTML = `<p style="color: var(--text-secondary);">No public repositories found for @${targetUsername}.</p>`;
+      }
+    }
+
     const langContainer = document.getElementById("languages-breakdown");
-    if (data.languages && data.languages.length > 0) {
-      langContainer.innerHTML = data.languages
-        .map(
-          (lang) => `
-        <div>
-          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;">
-            <span style="font-weight: 500; color: var(--text-primary);">${lang.name}</span>
-            <span style="color: var(--text-secondary);">${lang.percentage}%</span>
+    if (langContainer) {
+      if (data.languages && data.languages.length > 0) {
+        langContainer.innerHTML = data.languages
+          .map(
+            (lang) => `
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;">
+              <span style="font-weight: 500; color: var(--text-primary);">${lang.name}</span>
+              <span style="color: var(--text-secondary);">${lang.percentage}%</span>
+            </div>
+            <div style="height: 8px; background: var(--bg-primary); border-radius: 4px; overflow: hidden;">
+              <div style="width: ${lang.percentage}%; height: 100%; background-color: ${lang.color};"></div>
+            </div>
           </div>
-          <div style="height: 8px; background: var(--bg-primary); border-radius: 4px; overflow: hidden;">
-            <div style="width: ${lang.percentage}%; height: 100%; background-color: ${lang.color};"></div>
-          </div>
-        </div>
-      `,
-        )
-        .join("");
-    } else {
-      langContainer.innerHTML =
-        '<p style="color: var(--text-secondary);">No language breakdown available.</p>';
+        `,
+          )
+          .join("");
+      } else {
+        langContainer.innerHTML =
+          '<p style="color: var(--text-secondary);">No language breakdown available.</p>';
+      }
     }
 
     showToast(
@@ -120,10 +133,11 @@ export const renderDashboard = async (
 
   await loadUserData();
 
-  document
-    .getElementById("refresh-data-btn")
-    .addEventListener("click", async () => {
+  const refreshBtn = document.getElementById("refresh-data-btn");
+  if (refreshBtn) {
+    refreshBtn.addEventListener("click", async () => {
       showToast(`Re-syncing data for @${targetUsername}...`, "info");
       await loadUserData();
     });
+  }
 };
