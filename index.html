@@ -1,4 +1,26 @@
-<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Metages Yibeltal - Developer Platform & Profile Statistics</title>
+  
+  <!-- Core & Global Stylesheets (Must be at the top) -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components/navbar.css" />
+  <link rel="stylesheet" href="css/components/cards.css" />
+  <link rel="stylesheet" href="css/components/tables.css" />
+  <link rel="stylesheet" href="css/components/footer.css" />
+  
+  <!-- Feature Stylesheets -->
+  <link rel="stylesheet" href="css/features/commandPalette.css" />
+  <link rel="stylesheet" href="css/features/heatmap.css" />
+  <link rel="stylesheet" href="css/features/terminal.css" />
+  <link rel="stylesheet" href="css/features/timeline.css" />
+  <link rel="stylesheet" href="css/features/playground.css" />
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0; background-color: var(--bg-primary); color: var(--text-primary);">
   
   <!-- Global Application Header -->
   <div id="app-header-root"></div>
@@ -6,7 +28,7 @@
   <!-- Main Content Area -->
   <main class="main-content" style="flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem;">
     
-    <!-- Restored GitHub Analytics Dashboard View -->
+    <!-- GitHub Analytics Dashboard View -->
     <div id="main-content-view"></div>
 
     <!-- Non-GitHub Feature Widgets Grid -->
@@ -43,8 +65,12 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       initTheme();
-      renderHeader(document.getElementById('app-header-root'));
-      renderFooter(document.getElementById('app-footer-root'));
+      
+      const headerRoot = document.getElementById('app-header-root');
+      const footerRoot = document.getElementById('app-footer-root');
+      
+      if (headerRoot) renderHeader(headerRoot);
+      if (footerRoot) renderFooter(footerRoot);
 
       const initialUser = 'Yetemare-Yibeltal';
 
@@ -78,3 +104,4 @@
     });
   </script>
 </body>
+</html>
