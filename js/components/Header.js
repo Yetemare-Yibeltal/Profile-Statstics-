@@ -1,5 +1,5 @@
 /**
- * Formal Navigation Header Component passing active username through links
+ * Formal Navigation Header Component (Timeline removed)
  */
 
 import { toggleTheme } from "../core/theme.js";
@@ -20,7 +20,6 @@ export const renderHeader = (container) => {
         <a href="index.html${queryParam}" style="color: var(--text-primary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Dashboard</a>
         <a href="portfolio.html${queryParam}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Portfolio</a>
         <a href="projects.html${queryParam}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Projects</a>
-        <a href="experience.html${queryParam}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Experience</a>
       </nav>
 
       <div class="header-actions" style="display: flex; align-items: center; gap: 1.25rem;">

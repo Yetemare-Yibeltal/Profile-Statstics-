@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Metages Yibeltal - Developer Platform & Profile Statistics</title>
+  <title>Developer Platform & Profile Statistics</title>
   
-  <!-- Core & Global Stylesheets (Must be at the top) -->
+  <!-- Core & Global Stylesheets -->
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/components/navbar.css" />
@@ -17,7 +17,6 @@
   <link rel="stylesheet" href="css/features/commandPalette.css" />
   <link rel="stylesheet" href="css/features/heatmap.css" />
   <link rel="stylesheet" href="css/features/terminal.css" />
-  <link rel="stylesheet" href="css/features/timeline.css" />
   <link rel="stylesheet" href="css/features/playground.css" />
 </head>
 <body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0; background-color: var(--bg-primary); color: var(--text-primary);">
@@ -43,9 +42,6 @@
       <div id="terminal-container-root"></div>
     </div>
 
-    <!-- Experience Timeline -->
-    <div id="timeline-container-root"></div>
-
   </main>
 
   <!-- Global Application Footer -->
@@ -61,7 +57,6 @@
     import { renderSkillMatrix } from './js/features/skills/skillMatrix.js';
     import { renderContributionHeatmap } from './js/features/heatmap/contributionMatrix.js';
     import { renderTerminalSimulator } from './js/features/terminal/terminalSimulator.js';
-    import { renderExperienceTimeline } from './js/features/timeline/experienceTimeline.js';
     import { fetchLiveGitHubProfile } from './js/services/githubApi.js';
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -94,16 +89,6 @@
         // 5. Render Terminal simulator with active user context
         const terminalRoot = document.getElementById('terminal-container-root');
         if (terminalRoot) renderTerminalSimulator(terminalRoot, username);
-
-        // 6. Render Real Experience Timeline based on searched user profile data
-        const timelineRoot = document.getElementById('timeline-container-root');
-        if (timelineRoot && profileData.milestones) {
-          timelineRoot.innerHTML = `<h2 style="font-size: 1.25rem; color: var(--text-primary); margin-bottom: 1rem;">Career & Education Timeline: @${username}</h2>`;
-          const innerTimeline = document.createElement('div');
-          innerTimeline.style.cssText = "display: flex; flex-direction: column; gap: 1.5rem;";
-          timelineRoot.appendChild(innerTimeline);
-          renderExperienceTimeline(innerTimeline, profileData.milestones);
-        }
       };
 
       // Check if user was previously saved, otherwise initialize in prompt state
@@ -125,17 +110,6 @@
 
         const terminalRoot = document.getElementById('terminal-container-root');
         if (terminalRoot) renderTerminalSimulator(terminalRoot, null);
-
-        // Keep timeline prompting until a username is searched
-        const timelineRoot = document.getElementById('timeline-container-root');
-        if (timelineRoot) {
-          timelineRoot.innerHTML = `
-            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; text-align: center;">
-              <h3 class="widget-title">Career & Education Timeline</h3>
-              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">Enter a GitHub username above to load career milestones.</p>
-            </div>
-          `;
-        }
       }
     });
   </script>
