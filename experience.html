@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Experience Timeline - Metages Yibeltal</title>
+  <title>Experience Timeline - DevPlatform</title>
   
   <!-- Core Stylesheets -->
   <link rel="stylesheet" href="css/main.css" />
@@ -17,11 +17,15 @@
   <div id="app-header-root"></div>
   
   <main class="main-content" style="flex: 1; max-width: 900px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem;">
-    <h1 class="dashboard-title" style="margin-bottom: 0.5rem;">Professional Experience & Education</h1>
-    <p class="dashboard-subtitle" style="margin-bottom: 2rem; color: var(--text-secondary);">Academic background, engineering roles, and career milestones of Metages Yibeltal.</p>
-    
-    <div id="timeline-root" style="display: flex; flex-direction: column; gap: 1.5rem;">
-      <p style="color: var(--text-secondary);">Loading experience timeline...</p>
+    <div id="experience-container">
+      <div style="text-align: center; padding: 4rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); max-width: 600px; margin: 2rem auto;">
+        <h2 style="color: var(--text-primary); margin-bottom: 0.75rem;">No GitHub User Selected</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Please enter a GitHub username to view career milestones and education history.</p>
+        <form id="page-search-form" style="display: flex; gap: 0.5rem; max-width: 400px; margin: 0 auto;">
+          <input type="text" id="page-username-input" placeholder="Enter GitHub username..." required style="flex: 1; padding: 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);" />
+          <button type="submit" style="background: var(--accent-blue); color: #0f172a; border: none; padding: 0.6rem 1rem; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer;">Search</button>
+        </form>
+      </div>
     </div>
   </main>
 
@@ -38,43 +42,43 @@
       initTheme();
       renderHeader(document.getElementById('app-header-root'));
 
-      const profileData = await fetchLiveGitHubProfile('Yetemare-Yibeltal');
+      const urlParams = new URLSearchParams(window.location.search);
+      const username = urlParams.get('user') || localStorage.getItem('active_github_user');
+
+      const container = document.getElementById('experience-container');
+
+      if (!username) {
+        renderFooter(document.getElementById('app-footer-root'), {});
+        document.getElementById('page-search-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const val = document.getElementById('page-username-input').value.trim();
+          if (val) {
+            localStorage.setItem('active_github_user', val);
+            window.location.href = `experience.html?user=${val}`;
+          }
+        });
+        return;
+      }
+
+      localStorage.setItem('active_github_user', username);
+      const profileData = await fetchLiveGitHubProfile(username);
       renderFooter(document.getElementById('app-footer-root'), profileData.profile);
 
-      const timelineRoot = document.getElementById('timeline-root');
+      container.innerHTML = `
+        <h1 class="dashboard-title" style="margin-bottom: 0.5rem;">Professional Experience & Education</h1>
+        <p class="dashboard-subtitle" style="margin-bottom: 2rem; color: var(--text-secondary);">Academic background and career milestones for @${username}.</p>
+        <div id="timeline-root" style="display: flex; flex-direction: column; gap: 1.5rem;"></div>
+      `;
 
       try {
         const response = await fetch('assets/data/experienceData.json');
-        if (!response.ok) throw new Error('Failed to load experience data file');
         const data = await response.json();
-        
+        const timelineRoot = document.getElementById('timeline-root');
         if (timelineRoot && data.milestones) {
           renderExperienceTimeline(timelineRoot, data.milestones);
         }
       } catch (e) {
-        console.warn('Fallback to inline experience milestones due to fetch error', e);
-        // Fallback rendered directly so it never displays empty
-        const fallbackMilestones = [
-          {
-            year: "2026 - Present",
-            title: "Project Lead & Full-Stack Engineer",
-            organization: "HEROY Software Team",
-            description: "Leading the design and engineering specifications for a Water Supply Management System and other full-stack architectures."
-          },
-          {
-            year: "2025 - Present",
-            title: "Software Engineering Student",
-            organization: "Injibara University",
-            description: "Studying software engineering core principles, database management systems, algorithms, and full-stack web development."
-          },
-          {
-            year: "2025 - 2026",
-            title: "Full-Stack Web Developer",
-            organization: "Independent Projects & Freelance",
-            description: "Building production-ready applications using React, Next.js, Node.js, Express, Tailwind CSS, Python, and MySQL/MongoDB databases."
-          }
-        ];
-        renderExperienceTimeline(timelineRoot, fallbackMilestones);
+        console.warn('Timeline load error', e);
       }
     });
   </script>
