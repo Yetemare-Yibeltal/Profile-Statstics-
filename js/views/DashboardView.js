@@ -1,5 +1,5 @@
 /**
- * Dynamic Dashboard View Controller with Username Prompt State
+ * Dynamic Dashboard View Controller with Direct Username Input Form
  */
 
 import { fetchLiveGitHubProfile } from "../services/githubApi.js";
@@ -9,32 +9,52 @@ import { showToast } from "../features/toast.js";
 export const renderDashboard = async (rootElement, targetUsername = null) => {
   rootElement.className = "dashboard-view";
 
+  // Prompt state when no username is searched yet
   if (!targetUsername) {
     rootElement.innerHTML = `
-      <div style="text-align: center; padding: 3rem 1rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-        <h2 style="color: var(--text-primary); margin-bottom: 0.5rem;">GitHub Portfolio & Statistics Platform</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Enter a GitHub username in the top search bar above or click below to load default profile analytics.</p>
-        <button id="load-default-user-btn" style="background: var(--accent-blue); color: #0f172a; padding: 0.6rem 1.2rem; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; border: none;">Load @Yetemare-Yibeltal (Default)</button>
+      <div style="text-align: center; padding: 3.5rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); max-width: 650px; margin: 0 auto;">
+        <h2 style="color: var(--text-primary); margin-bottom: 0.75rem; font-size: 1.5rem;">GitHub Portfolio & Analytics Platform</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.75rem; font-size: 0.95rem;">Enter a GitHub username below or use the top search bar to load live profile telemetry, repositories, and contribution statistics.</p>
+        
+        <form id="inline-username-form" style="display: flex; gap: 0.5rem; max-width: 480px; margin: 0 auto;">
+          <input 
+            type="text" 
+            id="inline-username-input" 
+            placeholder="Enter GitHub username..." 
+            autocomplete="off"
+            required
+            style="flex: 1; padding: 0.65rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-size: 0.95rem;"
+          />
+          <button type="submit" style="background: var(--accent-blue); color: #0f172a; border: none; padding: 0.65rem 1.25rem; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; font-size: 0.95rem;">
+            Analyze Profile
+          </button>
+        </form>
       </div>
     `;
 
-    document
-      .getElementById("load-default-user-btn")
-      .addEventListener("click", () => {
-        if (window.refreshAppUI) {
-          window.refreshAppUI("Yetemare-Yibeltal");
+    const inlineForm = document.getElementById("inline-username-form");
+    if (inlineForm) {
+      inlineForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const inputVal = document
+          .getElementById("inline-username-input")
+          .value.trim();
+        if (inputVal && window.refreshAppUI) {
+          window.refreshAppUI(inputVal);
         }
       });
+    }
     return;
   }
 
+  // Active dashboard view when a username is searched
   rootElement.innerHTML = `
     <div class="dashboard-header">
       <div>
         <h1 class="dashboard-title" id="active-user-title">Live GitHub Analytics: @${targetUsername}</h1>
         <p class="dashboard-subtitle">Fetching live repository data and metrics directly from GitHub REST API</p>
       </div>
-      <button id="refresh-data-btn" style="background: var(--accent-blue); color: #0f172a; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600;">🔄 Sync Live Data</button>
+      <button id="refresh-data-btn" style="background: var(--accent-blue); color: #0f172a; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; border: none;">🔄 Sync Live Data</button>
     </div>
     
     <div class="grid-4" id="stats-grid">
