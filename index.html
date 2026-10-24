@@ -72,6 +72,7 @@
 
       // Centralized UI refresh function for any entered username
       window.refreshAppUI = async (username) => {
+        localStorage.setItem('active_github_user', username);
         const profileData = await fetchLiveGitHubProfile(username);
 
         // 1. Update Footer dynamically based on active user
@@ -93,33 +94,56 @@
         // 5. Render Terminal simulator with active user context
         const terminalRoot = document.getElementById('terminal-container-root');
         if (terminalRoot) renderTerminalSimulator(terminalRoot, username);
+
+        // 6. Render Real Experience Timeline only when active username is provided
+        const timelineRoot = document.getElementById('timeline-container-root');
+        if (timelineRoot) {
+          try {
+            const res = await fetch('assets/data/experienceData.json');
+            const data = await res.json();
+            if (data.milestones) {
+              timelineRoot.innerHTML = `<h2 style="font-size: 1.25rem; color: var(--text-primary); margin-bottom: 1rem;">Career & Education Timeline: @${username}</h2>`;
+              const innerTimeline = document.createElement('div');
+              innerTimeline.style.cssText = "display: flex; flex-direction: column; gap: 1.5rem;";
+              timelineRoot.appendChild(innerTimeline);
+              renderExperienceTimeline(innerTimeline, data.milestones);
+            }
+          } catch (e) {
+            console.warn('Timeline load error', e);
+          }
+        }
       };
 
-      // Initially load ALL sections with `null` so they prompt the user for input
-      const mainView = document.getElementById('main-content-view');
-      if (mainView) await renderDashboard(mainView, null);
+      // Check if user was previously saved, otherwise initialize in prompt state
+      const savedUser = localStorage.getItem('active_github_user');
+      if (savedUser) {
+        await window.refreshAppUI(savedUser);
+      } else {
+        const mainView = document.getElementById('main-content-view');
+        if (mainView) await renderDashboard(mainView, null);
 
-      const playgroundRoot = document.getElementById('playground-container-root');
-      if (playgroundRoot) renderCodePlayground(playgroundRoot);
+        const playgroundRoot = document.getElementById('playground-container-root');
+        if (playgroundRoot) renderCodePlayground(playgroundRoot);
 
-      const skillsRoot = document.getElementById('skills-container-root');
-      if (skillsRoot) renderSkillMatrix(skillsRoot, null);
+        const skillsRoot = document.getElementById('skills-container-root');
+        if (skillsRoot) renderSkillMatrix(skillsRoot, null);
 
-      const heatmapRoot = document.getElementById('heatmap-container-root');
-      if (heatmapRoot) renderContributionHeatmap(heatmapRoot, null);
+        const heatmapRoot = document.getElementById('heatmap-container-root');
+        if (heatmapRoot) renderContributionHeatmap(heatmapRoot, null);
 
-      const terminalRoot = document.getElementById('terminal-container-root');
-      if (terminalRoot) renderTerminalSimulator(terminalRoot, null);
+        const terminalRoot = document.getElementById('terminal-container-root');
+        if (terminalRoot) renderTerminalSimulator(terminalRoot, null);
 
-      try {
-        const res = await fetch('assets/data/experienceData.json');
-        const data = await res.json();
+        // Keep timeline prompting until a username is searched
         const timelineRoot = document.getElementById('timeline-container-root');
-        if (timelineRoot && data.milestones) {
-          renderExperienceTimeline(timelineRoot, data.milestones);
+        if (timelineRoot) {
+          timelineRoot.innerHTML = `
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; text-align: center;">
+              <h3 class="widget-title">Career & Education Timeline</h3>
+              <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">Enter a GitHub username above to load career milestones.</p>
+            </div>
+          `;
         }
-      } catch (e) {
-        console.warn('Timeline load error', e);
       }
     });
   </script>
