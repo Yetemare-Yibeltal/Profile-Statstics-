@@ -3,40 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Metages Yibeltal - Full Stack Software Engineer Portfolio</title>
+  <title>Portfolio - Metages Yibeltal</title>
   
   <!-- Core Stylesheets -->
   <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/components/navbar.css" />
   <link rel="stylesheet" href="css/components/cards.css" />
   <link rel="stylesheet" href="css/components/tables.css" />
   <link rel="stylesheet" href="css/components/footer.css" />
-  
-  <!-- Feature Stylesheets -->
-  <link rel="stylesheet" href="css/views/portfolio.css" />
-  <link rel="stylesheet" href="css/features/radar.css" />
-  <link rel="stylesheet" href="css/features/toast.css" />
 </head>
-<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0; background-color: var(--bg-primary); color: var(--text-primary);">
   <div id="app-header-root"></div>
   
-  <main class="main-content" style="flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem;">
-    <section class="portfolio-hero">
-      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80" alt="Metages Yibeltal" />
-      <div class="portfolio-bio">
-        <h1>Metages Yibeltal</h1>
-        <p>Full-Stack Software Engineer & Web Systems Architect specializing in robust web applications, responsive architectures, and data-driven systems.</p>
-        <button id="export-portfolio-btn" style="margin-top: 1rem; background: var(--accent-blue); color: #0f172a; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600;">📥 Export Portfolio JSON</button>
+  <main class="main-content" style="flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem;">
+    <section class="portfolio-hero" style="display: flex; gap: 2rem; align-items: center; background: var(--bg-card); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+      <img id="portfolio-avatar" src="https://github.com/Yetemare-Yibeltal.png" alt="Metages Yibeltal" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-blue);" />
+      <div>
+        <h1 id="portfolio-name" style="font-size: 1.75rem; margin-bottom: 0.5rem; color: var(--text-primary);">Metages Yibeltal</h1>
+        <p id="portfolio-bio" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem;">Full-Stack Software Engineer & Web Systems Architect specializing in robust web applications.</p>
+        <a id="portfolio-link" href="https://github.com/Yetemare-Yibeltal" target="_blank" style="display: inline-block; background: var(--accent-blue); color: #0f172a; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; font-size: 0.85rem;">🔗 View GitHub Profile</a>
       </div>
     </section>
 
-    <div class="grid-2">
-      <div id="radar-container"></div>
-      <div class="stat-card" style="display: flex; flex-direction: column; justify-content: center; gap: 1rem;">
-        <h3 class="widget-title">System Activity Status</h3>
-        <p style="color: var(--text-secondary); font-size: 0.9rem;">All core backend microservices and databases are operating at peak efficiency with zero recorded packet latency.</p>
-        <span style="color: var(--accent-green); font-weight: 600; font-size: 0.85rem;">● Production Deployment Active</span>
-      </div>
+    <div class="grid-4" id="portfolio-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
+      <div class="stat-card">Loading stats...</div>
     </div>
   </main>
 
@@ -46,19 +37,29 @@
     import { initTheme } from './js/core/theme.js';
     import { renderHeader } from './js/components/Header.js';
     import { renderFooter } from './js/components/Footer.js';
-    import { renderSkillRadar } from './js/features/radarChart.js';
-    import { handlePortfolioExport } from './js/features/portfolioExport.js';
-    import { userProfile } from './js/data/userData.js';
+    import { fetchLiveGitHubProfile } from './js/services/githubApi.js';
+    import { createStatCard } from './js/components/StatCard.js';
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       initTheme();
       renderHeader(document.getElementById('app-header-root'));
-      renderFooter(document.getElementById('app-footer-root'));
-      renderSkillRadar(document.getElementById('radar-container'));
 
-      document.getElementById('export-portfolio-btn').addEventListener('click', () => {
-        handlePortfolioExport(userProfile);
-      });
+      const data = await fetchLiveGitHubProfile('Yetemare-Yibeltal');
+      renderFooter(document.getElementById('app-footer-root'), data.profile);
+
+      document.getElementById('portfolio-name').textContent = data.profile.name;
+      document.getElementById('portfolio-bio').textContent = data.profile.bio;
+      document.getElementById('portfolio-avatar').src = data.profile.avatar;
+      document.getElementById('portfolio-link').href = data.profile.profileUrl;
+
+      const statsGrid = document.getElementById('portfolio-stats');
+      if (statsGrid) {
+        statsGrid.innerHTML = '';
+        statsGrid.appendChild(createStatCard('Public Repositories', data.profile.publicRepos, 0, '📂'));
+        statsGrid.appendChild(createStatCard('Total Stars', data.profile.totalStars, 0, '⭐'));
+        statsGrid.appendChild(createStatCard('Followers', data.profile.followers, 0, '👥'));
+        statsGrid.appendChild(createStatCard('Following', data.profile.following, 0, '🔗'));
+      }
     });
   </script>
 </body>

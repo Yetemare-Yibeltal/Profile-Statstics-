@@ -3,38 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Projects Showcase - Metages Yibeltal</title>
+  <title>Engineering Projects - Metages Yibeltal</title>
   
   <!-- Core Stylesheets -->
   <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/components/navbar.css" />
   <link rel="stylesheet" href="css/components/cards.css" />
   <link rel="stylesheet" href="css/components/tables.css" />
   <link rel="stylesheet" href="css/components/footer.css" />
 </head>
-<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0; background-color: var(--bg-primary); color: var(--text-primary);">
   <div id="app-header-root"></div>
   
   <main class="main-content" style="flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem;">
-    <h1 class="dashboard-title" style="margin-bottom: 0.5rem;">Engineering Projects</h1>
-    <p class="dashboard-subtitle" style="margin-bottom: 2rem; color: var(--text-secondary);">Explore full-stack software applications and web systems developed by Metages.</p>
+    <h1 class="dashboard-title" style="margin-bottom: 0.5rem;">Live GitHub Repositories & Projects</h1>
+    <p class="dashboard-subtitle" style="margin-bottom: 2rem; color: var(--text-secondary);">Real-time full-stack software applications and codebases fetched directly from GitHub (@Yetemare-Yibeltal).</p>
     
-    <div class="grid-3" id="projects-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-      <div class="stat-card">
-        <h3>Sana Queue</h3>
-        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">Patient queue management system built with FastAPI, React, and MongoDB.</p>
-        <span style="display: inline-block; margin-top: 1rem; color: var(--accent-blue); font-size: 0.8rem; font-weight: 600;">FastAPI • React • MongoDB</span>
-      </div>
-      <div class="stat-card">
-        <h3>Kidus Yared Hospital</h3>
-        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">Comprehensive healthcare administration platform and clinical workflow digitizer.</p>
-        <span style="display: inline-block; margin-top: 1rem; color: var(--accent-purple); font-size: 0.8rem; font-weight: 600;">Node.js • Express • MySQL</span>
-      </div>
-      <div class="stat-card">
-        <h3>Profile Statistics</h3>
-        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">Enterprise developer analytics dashboard tracking live GitHub statistics.</p>
-        <span style="display: inline-block; margin-top: 1rem; color: var(--accent-green); font-size: 0.8rem; font-weight: 600;">JavaScript • REST API • CSS</span>
-      </div>
+    <div class="grid-3" id="projects-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+      <p style="color: var(--text-secondary);">Fetching live repositories from GitHub...</p>
     </div>
   </main>
 
@@ -44,11 +31,32 @@
     import { initTheme } from './js/core/theme.js';
     import { renderHeader } from './js/components/Header.js';
     import { renderFooter } from './js/components/Footer.js';
+    import { fetchLiveGitHubProfile } from './js/services/githubApi.js';
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       initTheme();
       renderHeader(document.getElementById('app-header-root'));
-      renderFooter(document.getElementById('app-footer-root'));
+
+      const profileData = await fetchLiveGitHubProfile('Yetemare-Yibeltal');
+      renderFooter(document.getElementById('app-footer-root'), profileData.profile);
+
+      const grid = document.getElementById('projects-grid');
+      if (grid && profileData.repos.length > 0) {
+        grid.innerHTML = profileData.repos.map(repo => `
+          <a href="${repo.url}" target="_blank" class="stat-card" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border-color); background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md);">
+            <div>
+              <h3 style="color: var(--accent-blue); font-size: 1.1rem; margin-bottom: 0.5rem;">${repo.name}</h3>
+              <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4;">${repo.description}</p>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-muted);">
+              <span style="font-weight: 600; color: var(--accent-green);">${repo.language}</span>
+              <span>⭐ ${repo.stars}</span>
+            </div>
+          </a>
+        `).join('');
+      } else {
+        grid.innerHTML = '<p style="color: var(--text-secondary);">No public repositories found.</p>';
+      }
     });
   </script>
 </body>
