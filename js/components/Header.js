@@ -1,11 +1,14 @@
 /**
- * Formal Navigation Header Component with Site Links and Profile Avatar
+ * Formal Navigation Header Component passing active username through links
  */
 
 import { toggleTheme } from "../core/theme.js";
 
 export const renderHeader = (container) => {
   if (!container) return;
+
+  const activeUser = localStorage.getItem("active_github_user") || "";
+  const queryParam = activeUser ? `?user=${activeUser}` : "";
 
   container.innerHTML = `
     <header class="app-header" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 2.5rem; background: var(--bg-card); border-bottom: 1px solid var(--border-color);">
@@ -14,10 +17,10 @@ export const renderHeader = (container) => {
       </div>
 
       <nav class="header-nav" style="display: flex; gap: 1.5rem; align-items: center;">
-        <a href="index.html" style="color: var(--text-primary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Dashboard</a>
-        <a href="portfolio.html" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Portfolio</a>
-        <a href="projects.html" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Projects</a>
-        <a href="experience.html" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Experience</a>
+        <a href="index.html${queryParam}" style="color: var(--text-primary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Dashboard</a>
+        <a href="portfolio.html${queryParam}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Portfolio</a>
+        <a href="projects.html${queryParam}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Projects</a>
+        <a href="experience.html${queryParam}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Experience</a>
       </nav>
 
       <div class="header-actions" style="display: flex; align-items: center; gap: 1.25rem;">
@@ -25,8 +28,8 @@ export const renderHeader = (container) => {
           🌙
         </button>
         <div class="user-profile-menu" style="display: flex; align-items: center; gap: 0.6rem;">
-          <img src="https://github.com/Yetemare-Yibeltal.png" alt="Metages Yibeltal" class="avatar" id="header-avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color);" />
-          <span class="username" id="header-username" style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Yetemare-Yibeltal</span>
+          <img src="${activeUser ? `https://github.com/${activeUser}.png` : "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"}" alt="Avatar" class="avatar" id="header-avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color);" />
+          <span class="username" id="header-username" style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">${activeUser || "Guest"}</span>
         </div>
       </div>
     </header>
