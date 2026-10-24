@@ -1,4 +1,36 @@
-<script type="module">
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+  
+  <!-- Global Application Header -->
+  <div id="app-header-root"></div>
+
+  <!-- Main Content Area -->
+  <main class="main-content" style="flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem;">
+    
+    <!-- Restored GitHub Analytics Dashboard View -->
+    <div id="main-content-view"></div>
+
+    <!-- Non-GitHub Feature Widgets Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+      <div id="playground-container-root"></div>
+      <div id="skills-container-root"></div>
+    </div>
+
+    <!-- Heatmap & Terminal Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+      <div id="heatmap-container-root"></div>
+      <div id="terminal-container-root"></div>
+    </div>
+
+    <!-- Experience Timeline -->
+    <div id="timeline-container-root"></div>
+
+  </main>
+
+  <!-- Global Application Footer -->
+  <div id="app-footer-root"></div>
+
+  <!-- Application Bootstrap Script -->
+  <script type="module">
     import { initTheme } from './js/core/theme.js';
     import { renderHeader } from './js/components/Header.js';
     import { renderFooter } from './js/components/Footer.js';
@@ -16,22 +48,33 @@
 
       const initialUser = 'Yetemare-Yibeltal';
 
-      // 1. Mount the GitHub Analytics Dashboard view with default user
-      await renderDashboard(document.getElementById('main-content-view'), initialUser);
+      const mainView = document.getElementById('main-content-view');
+      if (mainView) {
+        await renderDashboard(mainView, initialUser);
+      }
 
-      // 2. Mount expanded features
-      renderCodePlayground(document.getElementById('playground-container-root'));
-      renderSkillMatrix(document.getElementById('skills-container-root'));
-      renderContributionHeatmap(document.getElementById('heatmap-container-root'));
-      renderTerminalSimulator(document.getElementById('terminal-container-root'), initialUser);
+      const playgroundRoot = document.getElementById('playground-container-root');
+      if (playgroundRoot) renderCodePlayground(playgroundRoot);
 
-      // 3. Load experience timeline data
+      const skillsRoot = document.getElementById('skills-container-root');
+      if (skillsRoot) renderSkillMatrix(skillsRoot);
+
+      const heatmapRoot = document.getElementById('heatmap-container-root');
+      if (heatmapRoot) renderContributionHeatmap(heatmapRoot);
+
+      const terminalRoot = document.getElementById('terminal-container-root');
+      if (terminalRoot) renderTerminalSimulator(terminalRoot, initialUser);
+
       try {
         const res = await fetch('assets/data/experienceData.json');
         const data = await res.json();
-        renderExperienceTimeline(document.getElementById('timeline-container-root'), data.milestones);
+        const timelineRoot = document.getElementById('timeline-container-root');
+        if (timelineRoot && data.milestones) {
+          renderExperienceTimeline(timelineRoot, data.milestones);
+        }
       } catch (e) {
         console.warn('Timeline load error', e);
       }
     });
   </script>
+</body>
