@@ -7,18 +7,20 @@
   
   <!-- Core Stylesheets -->
   <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/components/navbar.css" />
   <link rel="stylesheet" href="css/components/cards.css" />
   <link rel="stylesheet" href="css/components/footer.css" />
-  
-  <!-- Feature Stylesheets -->
   <link rel="stylesheet" href="css/features/timeline.css" />
 </head>
-<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0; background-color: var(--bg-primary); color: var(--text-primary);">
   <div id="app-header-root"></div>
   
   <main class="main-content" style="flex: 1; max-width: 900px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem;">
-    <div id="timeline-root">
+    <h1 class="dashboard-title" style="margin-bottom: 0.5rem;">Professional Experience & Education</h1>
+    <p class="dashboard-subtitle" style="margin-bottom: 2rem; color: var(--text-secondary);">Academic background, engineering roles, and career milestones of Metages Yibeltal.</p>
+    
+    <div id="timeline-root" style="display: flex; flex-direction: column; gap: 1.5rem;">
       <p style="color: var(--text-secondary);">Loading experience timeline...</p>
     </div>
   </main>
@@ -30,18 +32,49 @@
     import { renderHeader } from './js/components/Header.js';
     import { renderFooter } from './js/components/Footer.js';
     import { renderExperienceTimeline } from './js/features/timeline/experienceTimeline.js';
+    import { fetchLiveGitHubProfile } from './js/services/githubApi.js';
 
     document.addEventListener('DOMContentLoaded', async () => {
       initTheme();
       renderHeader(document.getElementById('app-header-root'));
-      renderFooter(document.getElementById('app-footer-root'));
+
+      const profileData = await fetchLiveGitHubProfile('Yetemare-Yibeltal');
+      renderFooter(document.getElementById('app-footer-root'), profileData.profile);
+
+      const timelineRoot = document.getElementById('timeline-root');
 
       try {
         const response = await fetch('assets/data/experienceData.json');
+        if (!response.ok) throw new Error('Failed to load experience data file');
         const data = await response.json();
-        renderExperienceTimeline(document.getElementById('timeline-root'), data.milestones);
+        
+        if (timelineRoot && data.milestones) {
+          renderExperienceTimeline(timelineRoot, data.milestones);
+        }
       } catch (e) {
-        console.error('Failed to load experience milestones', e);
+        console.warn('Fallback to inline experience milestones due to fetch error', e);
+        // Fallback rendered directly so it never displays empty
+        const fallbackMilestones = [
+          {
+            year: "2026 - Present",
+            title: "Project Lead & Full-Stack Engineer",
+            organization: "HEROY Software Team",
+            description: "Leading the design and engineering specifications for a Water Supply Management System and other full-stack architectures."
+          },
+          {
+            year: "2025 - Present",
+            title: "Software Engineering Student",
+            organization: "Injibara University",
+            description: "Studying software engineering core principles, database management systems, algorithms, and full-stack web development."
+          },
+          {
+            year: "2025 - 2026",
+            title: "Full-Stack Web Developer",
+            organization: "Independent Projects & Freelance",
+            description: "Building production-ready applications using React, Next.js, Node.js, Express, Tailwind CSS, Python, and MySQL/MongoDB databases."
+          }
+        ];
+        renderExperienceTimeline(timelineRoot, fallbackMilestones);
       }
     });
   </script>
