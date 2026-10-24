@@ -62,34 +62,46 @@
     import { renderContributionHeatmap } from './js/features/heatmap/contributionMatrix.js';
     import { renderTerminalSimulator } from './js/features/terminal/terminalSimulator.js';
     import { renderExperienceTimeline } from './js/features/timeline/experienceTimeline.js';
+    import { fetchLiveGitHubProfile } from './js/services/githubApi.js';
 
     document.addEventListener('DOMContentLoaded', async () => {
       initTheme();
       
       const headerRoot = document.getElementById('app-header-root');
-      const footerRoot = document.getElementById('app-footer-root');
-      
       if (headerRoot) renderHeader(headerRoot);
-      if (footerRoot) renderFooter(footerRoot);
+
+      // Function to update all page sections based on searched username
+      window.refreshAppUI = async (username) => {
+        // Fetch live profile telemetry
+        const profileData = await fetchLiveGitHubProfile(username);
+
+        // 1. Update Footer dynamically
+        const footerRoot = document.getElementById('app-footer-root');
+        if (footerRoot) renderFooter(footerRoot, profileData.profile);
+
+        // 2. Render Dashboard view
+        const mainView = document.getElementById('main-content-view');
+        if (mainView) await renderDashboard(mainView, username);
+
+        // 3. Render Terminal simulator with new user context
+        const terminalRoot = document.getElementById('terminal-container-root');
+        if (terminalRoot) renderTerminalSimulator(terminalRoot, username);
+
+        // 4. Render Skill Matrix with dynamic language stats
+        const skillsRoot = document.getElementById('skills-container-root');
+        if (skillsRoot) renderSkillMatrix(skillsRoot, profileData.languages);
+      };
 
       const initialUser = 'Yetemare-Yibeltal';
 
-      const mainView = document.getElementById('main-content-view');
-      if (mainView) {
-        await renderDashboard(mainView, initialUser);
-      }
+      // Initial load of all components
+      await window.refreshAppUI(initialUser);
 
       const playgroundRoot = document.getElementById('playground-container-root');
       if (playgroundRoot) renderCodePlayground(playgroundRoot);
 
-      const skillsRoot = document.getElementById('skills-container-root');
-      if (skillsRoot) renderSkillMatrix(skillsRoot);
-
       const heatmapRoot = document.getElementById('heatmap-container-root');
       if (heatmapRoot) renderContributionHeatmap(heatmapRoot);
-
-      const terminalRoot = document.getElementById('terminal-container-root');
-      if (terminalRoot) renderTerminalSimulator(terminalRoot, initialUser);
 
       try {
         const res = await fetch('assets/data/experienceData.json');
