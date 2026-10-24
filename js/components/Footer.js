@@ -3,6 +3,12 @@
  */
 
 export const renderFooter = (containerElement) => {
+  // Safeguard: check if container exists
+  if (!containerElement) {
+    console.warn("Footer container element not found in the DOM.");
+    return;
+  }
+
   const footer = document.createElement("footer");
   footer.className = "app-footer";
   footer.innerHTML = `
