@@ -82,29 +82,34 @@
         const mainView = document.getElementById('main-content-view');
         if (mainView) await renderDashboard(mainView, username);
 
-        // 3. Render Terminal simulator with new user context
-        const terminalRoot = document.getElementById('terminal-container-root');
-        if (terminalRoot) renderTerminalSimulator(terminalRoot, username);
-
-        // 4. Render Skill Matrix with dynamic language stats
+        // 3. Render Skill Matrix with dynamic language stats
         const skillsRoot = document.getElementById('skills-container-root');
         if (skillsRoot) renderSkillMatrix(skillsRoot, profileData.languages);
+
+        // 4. Render Contribution Heatmap for active user
+        const heatmapRoot = document.getElementById('heatmap-container-root');
+        if (heatmapRoot) renderContributionHeatmap(heatmapRoot, username);
+
+        // 5. Render Terminal simulator with active user context
+        const terminalRoot = document.getElementById('terminal-container-root');
+        if (terminalRoot) renderTerminalSimulator(terminalRoot, username);
       };
 
-      // Initially load with `null` so it prompts the user to enter a username
+      // Initially load ALL sections with `null` so they prompt the user for input
       const mainView = document.getElementById('main-content-view');
-      if (mainView) {
-        await renderDashboard(mainView, null);
-      }
+      if (mainView) await renderDashboard(mainView, null);
 
       const playgroundRoot = document.getElementById('playground-container-root');
       if (playgroundRoot) renderCodePlayground(playgroundRoot);
 
+      const skillsRoot = document.getElementById('skills-container-root');
+      if (skillsRoot) renderSkillMatrix(skillsRoot, null);
+
       const heatmapRoot = document.getElementById('heatmap-container-root');
-      if (heatmapRoot) renderContributionHeatmap(heatmapRoot);
+      if (heatmapRoot) renderContributionHeatmap(heatmapRoot, null);
 
       const terminalRoot = document.getElementById('terminal-container-root');
-      if (terminalRoot) renderTerminalSimulator(terminalRoot, 'Yetemare-Yibeltal');
+      if (terminalRoot) renderTerminalSimulator(terminalRoot, null);
 
       try {
         const res = await fetch('assets/data/experienceData.json');
