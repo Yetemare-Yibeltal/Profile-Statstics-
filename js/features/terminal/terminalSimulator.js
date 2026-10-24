@@ -1,19 +1,22 @@
 /**
- * Developer terminal simulator component with command inputs
+ * Dynamic Developer Terminal Simulator
  */
 
-export const renderTerminalSimulator = (containerElement) => {
+export const renderTerminalSimulator = (
+  containerElement,
+  activeUsername = "Yetemare-Yibeltal",
+) => {
   containerElement.innerHTML = `
     <div class="terminal-card">
       <div class="terminal-header">
         <span class="terminal-dot red"></span>
         <span class="terminal-dot yellow"></span>
         <span class="terminal-dot green"></span>
-        <span class="terminal-title">metages@system:~</span>
+        <span class="terminal-title">${activeUsername}@system:~</span>
       </div>
       <div class="terminal-body" id="terminal-output">
-        <p class="term-line">Welcome to Metages Engineering CLI v3.5</p>
-        <p class="term-line">Type 'help' to view available commands.</p>
+        <p class="term-line">Connected to GitHub target: @${activeUsername}</p>
+        <p class="term-line">Type 'help' or 'profile' for commands.</p>
       </div>
       <div class="terminal-input-row">
         <span class="term-prompt">$</span>
@@ -37,17 +40,11 @@ export const renderTerminalSimulator = (containerElement) => {
       pRes.className = "term-line";
 
       if (cmd === "help") {
-        pRes.textContent =
-          "Available commands: whoami, skills, repos, clear, date";
-      } else if (cmd === "whoami") {
-        pRes.textContent =
-          "Metages Yibeltal - Full-Stack Software Engineer & Student at Injibara University.";
-      } else if (cmd === "skills") {
-        pRes.textContent =
-          "JavaScript, TypeScript, Python, React, Node.js, Express, FastAPI, MongoDB, MySQL";
+        pRes.textContent = "Available commands: profile, repos, clear, date";
+      } else if (cmd === "profile" || cmd === "whoami") {
+        pRes.textContent = `Active target profile handle: @${activeUsername}`;
       } else if (cmd === "repos") {
-        pRes.textContent =
-          "Synced with GitHub account: Yetemare-Yibeltal (Over 35 repositories)";
+        pRes.textContent = `Fetching public repository telemetry for @${activeUsername}... Done.`;
       } else if (cmd === "date") {
         pRes.textContent = new Date().toUTCString();
       } else if (cmd === "clear") {
