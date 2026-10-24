@@ -3,31 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio - Metages Yibeltal</title>
+  <title>Portfolio - DevPlatform</title>
   
-  <!-- Core Stylesheets -->
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/components/navbar.css" />
   <link rel="stylesheet" href="css/components/cards.css" />
-  <link rel="stylesheet" href="css/components/tables.css" />
   <link rel="stylesheet" href="css/components/footer.css" />
 </head>
 <body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0; background-color: var(--bg-primary); color: var(--text-primary);">
   <div id="app-header-root"></div>
   
-  <main class="main-content" style="flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 2rem;">
-    <section class="portfolio-hero" style="display: flex; gap: 2rem; align-items: center; background: var(--bg-card); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-      <img id="portfolio-avatar" src="https://github.com/Yetemare-Yibeltal.png" alt="Metages Yibeltal" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-blue);" />
-      <div>
-        <h1 id="portfolio-name" style="font-size: 1.75rem; margin-bottom: 0.5rem; color: var(--text-primary);">Metages Yibeltal</h1>
-        <p id="portfolio-bio" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem;">Full-Stack Software Engineer & Web Systems Architect specializing in robust web applications.</p>
-        <a id="portfolio-link" href="https://github.com/Yetemare-Yibeltal" target="_blank" style="display: inline-block; background: var(--accent-blue); color: #0f172a; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; font-size: 0.85rem;">🔗 View GitHub Profile</a>
+  <main class="main-content" style="flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem;">
+    <div id="portfolio-container">
+      <div style="text-align: center; padding: 4rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); max-width: 600px; margin: 2rem auto;">
+        <h2 style="color: var(--text-primary); margin-bottom: 0.75rem;">No GitHub User Selected</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Please enter a GitHub username to view live profile analytics.</p>
+        <form id="page-search-form" style="display: flex; gap: 0.5rem; max-width: 400px; margin: 0 auto;">
+          <input type="text" id="page-username-input" placeholder="Enter GitHub username..." required style="flex: 1; padding: 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);" />
+          <button type="submit" style="background: var(--accent-blue); color: #0f172a; border: none; padding: 0.6rem 1rem; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer;">Search</button>
+        </form>
       </div>
-    </section>
-
-    <div class="grid-4" id="portfolio-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
-      <div class="stat-card">Loading stats...</div>
     </div>
   </main>
 
@@ -44,22 +40,47 @@
       initTheme();
       renderHeader(document.getElementById('app-header-root'));
 
-      const data = await fetchLiveGitHubProfile('Yetemare-Yibeltal');
+      const urlParams = new URLSearchParams(window.location.search);
+      const username = urlParams.get('user') || localStorage.getItem('active_github_user');
+
+      const container = document.getElementById('portfolio-container');
+
+      if (!username) {
+        renderFooter(document.getElementById('app-footer-root'), {});
+        document.getElementById('page-search-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const val = document.getElementById('page-username-input').value.trim();
+          if (val) {
+            localStorage.setItem('active_github_user', val);
+            window.location.href = `portfolio.html?user=${val}`;
+          }
+        });
+        return;
+      }
+
+      localStorage.setItem('active_github_user', username);
+      const data = await fetchLiveGitHubProfile(username);
       renderFooter(document.getElementById('app-footer-root'), data.profile);
 
-      document.getElementById('portfolio-name').textContent = data.profile.name;
-      document.getElementById('portfolio-bio').textContent = data.profile.bio;
-      document.getElementById('portfolio-avatar').src = data.profile.avatar;
-      document.getElementById('portfolio-link').href = data.profile.profileUrl;
+      container.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+          <section style="display: flex; gap: 2rem; align-items: center; background: var(--bg-card); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <img src="${data.profile.avatar}" alt="${data.profile.name}" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-blue);" />
+            <div>
+              <h1 style="font-size: 1.75rem; margin-bottom: 0.5rem; color: var(--text-primary);">${data.profile.name}</h1>
+              <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1rem;">${data.profile.bio}</p>
+              <a href="${data.profile.profileUrl}" target="_blank" style="display: inline-block; background: var(--accent-blue); color: #0f172a; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; font-size: 0.85rem;">🔗 View GitHub Profile</a>
+            </div>
+          </section>
+          <div class="grid-4" id="portfolio-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;"></div>
+        </div>
+      `;
 
       const statsGrid = document.getElementById('portfolio-stats');
-      if (statsGrid) {
-        statsGrid.innerHTML = '';
-        statsGrid.appendChild(createStatCard('Public Repositories', data.profile.publicRepos, 0, '📂'));
-        statsGrid.appendChild(createStatCard('Total Stars', data.profile.totalStars, 0, '⭐'));
-        statsGrid.appendChild(createStatCard('Followers', data.profile.followers, 0, '👥'));
-        statsGrid.appendChild(createStatCard('Following', data.profile.following, 0, '🔗'));
-      }
+      statsGrid.appendChild(createStatCard('Public Repositories', data.profile.publicRepos, 0, '📂'));
+      statsGrid.appendChild(createStatCard('Total Stars', data.profile.totalStars, 0, '⭐'));
+      statsGrid.appendChild(createStatCard('Followers', data.profile.followers, 0, '👥'));
+      statsGrid.appendChild(createStatCard('Following', data.profile.following, 0, '🔗'));
     });
   </script>
 </body>
