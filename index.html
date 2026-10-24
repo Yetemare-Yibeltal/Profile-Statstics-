@@ -70,16 +70,15 @@
       const headerRoot = document.getElementById('app-header-root');
       if (headerRoot) renderHeader(headerRoot);
 
-      // Function to update all page sections based on searched username
+      // Centralized UI refresh function for any entered username
       window.refreshAppUI = async (username) => {
-        // Fetch live profile telemetry
         const profileData = await fetchLiveGitHubProfile(username);
 
-        // 1. Update Footer dynamically
+        // 1. Update Footer dynamically based on active user
         const footerRoot = document.getElementById('app-footer-root');
         if (footerRoot) renderFooter(footerRoot, profileData.profile);
 
-        // 2. Render Dashboard view
+        // 2. Render Dashboard view with active user stats
         const mainView = document.getElementById('main-content-view');
         if (mainView) await renderDashboard(mainView, username);
 
@@ -92,16 +91,20 @@
         if (skillsRoot) renderSkillMatrix(skillsRoot, profileData.languages);
       };
 
-      const initialUser = 'Yetemare-Yibeltal';
-
-      // Initial load of all components
-      await window.refreshAppUI(initialUser);
+      // Initially load with `null` so it prompts the user to enter a username
+      const mainView = document.getElementById('main-content-view');
+      if (mainView) {
+        await renderDashboard(mainView, null);
+      }
 
       const playgroundRoot = document.getElementById('playground-container-root');
       if (playgroundRoot) renderCodePlayground(playgroundRoot);
 
       const heatmapRoot = document.getElementById('heatmap-container-root');
       if (heatmapRoot) renderContributionHeatmap(heatmapRoot);
+
+      const terminalRoot = document.getElementById('terminal-container-root');
+      if (terminalRoot) renderTerminalSimulator(terminalRoot, 'Yetemare-Yibeltal');
 
       try {
         const res = await fetch('assets/data/experienceData.json');
