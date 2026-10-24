@@ -4,16 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Metages Yibeltal - Full Stack Software Engineer Portfolio</title>
+  
+  <!-- Core Stylesheets -->
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/components/navbar.css" />
   <link rel="stylesheet" href="css/components/cards.css" />
+  <link rel="stylesheet" href="css/components/tables.css" />
+  <link rel="stylesheet" href="css/components/footer.css" />
+  
+  <!-- Feature Stylesheets -->
   <link rel="stylesheet" href="css/views/portfolio.css" />
   <link rel="stylesheet" href="css/features/radar.css" />
   <link rel="stylesheet" href="css/features/toast.css" />
 </head>
-<body>
+<body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0;">
   <div id="app-header-root"></div>
-  <main class="main-content">
+  
+  <main class="main-content" style="flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem;">
     <section class="portfolio-hero">
       <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80" alt="Metages Yibeltal" />
       <div class="portfolio-bio">
@@ -33,9 +40,12 @@
     </div>
   </main>
 
+  <div id="app-footer-root"></div>
+
   <script type="module">
     import { initTheme } from './js/core/theme.js';
     import { renderHeader } from './js/components/Header.js';
+    import { renderFooter } from './js/components/Footer.js';
     import { renderSkillRadar } from './js/features/radarChart.js';
     import { handlePortfolioExport } from './js/features/portfolioExport.js';
     import { userProfile } from './js/data/userData.js';
@@ -43,6 +53,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       initTheme();
       renderHeader(document.getElementById('app-header-root'));
+      renderFooter(document.getElementById('app-footer-root'));
       renderSkillRadar(document.getElementById('radar-container'));
 
       document.getElementById('export-portfolio-btn').addEventListener('click', () => {
