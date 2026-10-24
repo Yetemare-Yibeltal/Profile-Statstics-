@@ -1,0 +1,22 @@
+{
+  "milestones": [
+    {
+      "year": "2026 - Present",
+      "title": "Project Lead & Full-Stack Engineer",
+      "organization": "HEROY Software Team",
+      "description": "Leading the design and engineering specifications for a Water Supply Management System and other full-stack architectures."
+    },
+    {
+      "year": "2025 - Present",
+      "title": "Software Engineering Student",
+      "organization": "Injibara University",
+      "description": "Studying software engineering core principles, database management systems, algorithms, and full-stack web development."
+    },
+    {
+      "year": "2025 - 2026",
+      "title": "Full-Stack Web Developer",
+      "organization": "Independent Projects & Freelance",
+      "description": "Building production-ready applications using React, Next.js, Node.js, Express, Tailwind CSS, Python, and MySQL/MongoDB databases."
+    }
+  ]
+}
