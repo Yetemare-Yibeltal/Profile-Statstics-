@@ -1,13 +1,9 @@
 /**
- * Navigation header component with dynamic GitHub username input and search button
+ * Navigation header component with dynamic search trigger
  */
 
 import { toggleTheme } from "../core/theme.js";
-import { renderDashboard } from "../views/DashboardView.js";
 import { showToast } from "../features/toast.js";
-import { fetchLiveGitHubProfile } from "../services/githubApi.js";
-import { renderFooter } from "./Footer.js";
-import { renderTerminalSimulator } from "../features/terminal/terminalSimulator.js";
 
 export const renderHeader = (container) => {
   if (!container) return;
@@ -17,7 +13,7 @@ export const renderHeader = (container) => {
       <div class="search-bar" style="display: flex; gap: 0.5rem; align-items: center;">
         <input 
           type="text" 
-          placeholder="Enter GitHub username..." 
+          placeholder="Enter GitHub username & press Search..." 
           id="global-search" 
           autocomplete="off"
         />
@@ -35,42 +31,26 @@ export const renderHeader = (container) => {
     </header>
   `;
 
-  const themeBtn = document.getElementById("theme-toggle-btn");
-  if (themeBtn) themeBtn.addEventListener("click", toggleTheme);
+  document
+    .getElementById("theme-toggle-btn")
+    .addEventListener("click", toggleTheme);
 
   const searchInput = document.getElementById("global-search");
   const searchBtn = document.getElementById("search-btn");
 
-  const handleUserSearch = async () => {
+  const executeSearch = () => {
     const username = searchInput.value.trim();
     if (!username) return;
 
-    showToast(`Fetching GitHub statistics for @${username}...`, "info");
-
-    // Fetch profile data to update dashboard, footer, and terminal dynamically
-    const data = await fetchLiveGitHubProfile(username);
-
-    const viewRoot = document.getElementById("main-content-view");
-    if (viewRoot) {
-      await renderDashboard(viewRoot, username);
-    }
-
-    const footerRoot = document.getElementById("app-footer-root");
-    if (footerRoot) {
-      footerRoot.innerHTML = "";
-      renderFooter(footerRoot, data.profile);
-    }
-
-    const terminalRoot = document.getElementById("terminal-container-root");
-    if (terminalRoot) {
-      renderTerminalSimulator(terminalRoot, username);
+    if (window.refreshAppUI) {
+      window.refreshAppUI(username);
+    } else {
+      showToast(`Please enter a valid username.`, "info");
     }
   };
 
-  if (searchBtn) searchBtn.addEventListener("click", handleUserSearch);
-  if (searchInput) {
-    searchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleUserSearch();
-    });
-  }
+  searchBtn.addEventListener("click", executeSearch);
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") executeSearch();
+  });
 };
