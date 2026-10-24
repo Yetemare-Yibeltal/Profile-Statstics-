@@ -95,22 +95,14 @@
         const terminalRoot = document.getElementById('terminal-container-root');
         if (terminalRoot) renderTerminalSimulator(terminalRoot, username);
 
-        // 6. Render Real Experience Timeline only when active username is provided
+        // 6. Render Real Experience Timeline based on searched user profile data
         const timelineRoot = document.getElementById('timeline-container-root');
-        if (timelineRoot) {
-          try {
-            const res = await fetch('assets/data/experienceData.json');
-            const data = await res.json();
-            if (data.milestones) {
-              timelineRoot.innerHTML = `<h2 style="font-size: 1.25rem; color: var(--text-primary); margin-bottom: 1rem;">Career & Education Timeline: @${username}</h2>`;
-              const innerTimeline = document.createElement('div');
-              innerTimeline.style.cssText = "display: flex; flex-direction: column; gap: 1.5rem;";
-              timelineRoot.appendChild(innerTimeline);
-              renderExperienceTimeline(innerTimeline, data.milestones);
-            }
-          } catch (e) {
-            console.warn('Timeline load error', e);
-          }
+        if (timelineRoot && profileData.milestones) {
+          timelineRoot.innerHTML = `<h2 style="font-size: 1.25rem; color: var(--text-primary); margin-bottom: 1rem;">Career & Education Timeline: @${username}</h2>`;
+          const innerTimeline = document.createElement('div');
+          innerTimeline.style.cssText = "display: flex; flex-direction: column; gap: 1.5rem;";
+          timelineRoot.appendChild(innerTimeline);
+          renderExperienceTimeline(innerTimeline, profileData.milestones);
         }
       };
 
@@ -146,40 +138,6 @@
         }
       }
     });
-    window.refreshAppUI = async (username) => {
-        localStorage.setItem('active_github_user', username);
-        const profileData = await fetchLiveGitHubProfile(username);
-
-        // 1. Update Footer dynamically based on active user
-        const footerRoot = document.getElementById('app-footer-root');
-        if (footerRoot) renderFooter(footerRoot, profileData.profile);
-
-        // 2. Render Dashboard view with active user stats
-        const mainView = document.getElementById('main-content-view');
-        if (mainView) await renderDashboard(mainView, username);
-
-        // 3. Render Skill Matrix with dynamic language stats
-        const skillsRoot = document.getElementById('skills-container-root');
-        if (skillsRoot) renderSkillMatrix(skillsRoot, profileData.languages);
-
-        // 4. Render Contribution Heatmap for active user
-        const heatmapRoot = document.getElementById('heatmap-container-root');
-        if (heatmapRoot) renderContributionHeatmap(heatmapRoot, username);
-
-        // 5. Render Terminal simulator with active user context
-        const terminalRoot = document.getElementById('terminal-container-root');
-        if (terminalRoot) renderTerminalSimulator(terminalRoot, username);
-
-        // 6. Render Real Experience Timeline based on searched user profile data
-        const timelineRoot = document.getElementById('timeline-container-root');
-        if (timelineRoot && profileData.milestones) {
-          timelineRoot.innerHTML = `<h2 style="font-size: 1.25rem; color: var(--text-primary); margin-bottom: 1rem;">Career & Education Timeline: @${username}</h2>`;
-          const innerTimeline = document.createElement('div');
-          innerTimeline.style.cssText = "display: flex; flex-direction: column; gap: 1.5rem;";
-          timelineRoot.appendChild(innerTimeline);
-          renderExperienceTimeline(innerTimeline, profileData.milestones);
-        }
-      };
   </script>
 </body>
 </html>
