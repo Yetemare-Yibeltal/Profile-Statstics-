@@ -1,25 +1,28 @@
 /**
- * Live GitHub API Client for Yetemare-Yibeltal
+ * Dynamic GitHub REST API Client
  */
 
-const GITHUB_USERNAME = "Yetemare-Yibeltal";
-
-export const fetchLiveGitHubProfile = async () => {
+export const fetchLiveGitHubProfile = async (
+  targetUsername = "Yetemare-Yibeltal",
+) => {
   try {
     const [userRes, reposRes] = await Promise.all([
-      fetch(`https://api.github.com/users/${GITHUB_USERNAME}`),
+      fetch(`https://api.github.com/users/${targetUsername}`),
       fetch(
-        `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`,
+        `https://api.github.com/users/${targetUsername}/repos?per_page=100&sort=updated`,
       ),
     ]);
 
-    if (!userRes.ok || !reposRes.ok)
-      throw new Error("GitHub API rate limit or network error");
+    if (!userRes.ok || !reposRes.ok) {
+      throw new Error(
+        `GitHub user '${targetUsername}' not found or rate limit exceeded.`,
+      );
+    }
 
     const userData = await userRes.json();
     const reposData = await reposRes.json();
 
-    // Calculate total stars and language distribution dynamically from your repos
+    // Dynamically calculate total stars & language distribution
     let totalStars = 0;
     const languageCounts = {};
 
@@ -31,7 +34,6 @@ export const fetchLiveGitHubProfile = async () => {
       }
     });
 
-    // Format languages into percentage shares
     const totalReposWithLang = Object.values(languageCounts).reduce(
       (a, b) => a + b,
       1,
@@ -48,16 +50,16 @@ export const fetchLiveGitHubProfile = async () => {
     return {
       success: true,
       profile: {
-        name: userData.name || GITHUB_USERNAME,
+        name: userData.name || userData.login,
         username: userData.login,
-        bio: userData.bio || "Full-Stack Software Engineer & Web Developer",
+        bio: userData.bio || "Developer Profile",
         avatar: userData.avatar_url,
         profileUrl: userData.html_url,
         publicRepos: userData.public_repos,
         followers: userData.followers,
         following: userData.following,
         totalStars: totalStars,
-        company: userData.company || "Injibara University",
+        company: userData.company || "N/A",
       },
       repos: reposData.map((r) => ({
         id: r.id,
@@ -72,26 +74,21 @@ export const fetchLiveGitHubProfile = async () => {
       languages: topLanguages,
     };
   } catch (error) {
-    console.warn("Using fallback cached profile data:", error);
+    console.warn(`Error fetching stats for ${targetUsername}:`, error);
     return {
       success: false,
       profile: {
-        name: "Metages Yibeltal",
-        username: GITHUB_USERNAME,
-        bio: "Full-Stack Software Engineer",
-        avatar: "https://github.com/" + GITHUB_USERNAME + ".png",
-        publicRepos: 35,
-        followers: 120,
-        totalStars: 48,
-        company: "Injibara University",
+        name: targetUsername,
+        username: targetUsername,
+        bio: "Profile details unavailable or rate limited.",
+        avatar: `https://github.com/${targetUsername}.png`,
+        publicRepos: 0,
+        followers: 0,
+        totalStars: 0,
+        company: "N/A",
       },
       repos: [],
-      languages: [
-        { name: "JavaScript", percentage: 45, color: "#f7df1e" },
-        { name: "TypeScript", percentage: 25, color: "#3178c6" },
-        { name: "Python", percentage: 20, color: "#3776ab" },
-        { name: "HTML/CSS", percentage: 10, color: "#e34f26" },
-      ],
+      languages: [],
     };
   }
 };
