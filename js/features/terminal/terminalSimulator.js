@@ -4,8 +4,26 @@
 
 export const renderTerminalSimulator = (
   containerElement,
-  activeUsername = "Yetemare-Yibeltal",
+  activeUsername = null,
 ) => {
+  if (!activeUsername) {
+    containerElement.innerHTML = `
+      <div class="terminal-card">
+        <div class="terminal-header">
+          <span class="terminal-dot red"></span>
+          <span class="terminal-dot yellow"></span>
+          <span class="terminal-dot green"></span>
+          <span class="terminal-title">guest@system:~</span>
+        </div>
+        <div class="terminal-body">
+          <p class="term-line">No target GitHub user selected.</p>
+          <p class="term-line">Please enter a username in the search bar above.</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
   containerElement.innerHTML = `
     <div class="terminal-card">
       <div class="terminal-header">
@@ -28,36 +46,38 @@ export const renderTerminalSimulator = (
   const output = document.getElementById("terminal-output");
   const input = document.getElementById("terminal-input-field");
 
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      const cmd = input.value.trim().toLowerCase();
-      const pReq = document.createElement("p");
-      pReq.className = "term-line";
-      pReq.innerHTML = `<span style="color: var(--accent-blue);">$</span> ${input.value}`;
-      output.appendChild(pReq);
+  if (input) {
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const cmd = input.value.trim().toLowerCase();
+        const pReq = document.createElement("p");
+        pReq.className = "term-line";
+        pReq.innerHTML = `<span style="color: var(--accent-blue);">$</span> ${input.value}`;
+        output.appendChild(pReq);
 
-      const pRes = document.createElement("p");
-      pRes.className = "term-line";
+        const pRes = document.createElement("p");
+        pRes.className = "term-line";
 
-      if (cmd === "help") {
-        pRes.textContent = "Available commands: profile, repos, clear, date";
-      } else if (cmd === "profile" || cmd === "whoami") {
-        pRes.textContent = `Active target profile handle: @${activeUsername}`;
-      } else if (cmd === "repos") {
-        pRes.textContent = `Fetching public repository telemetry for @${activeUsername}... Done.`;
-      } else if (cmd === "date") {
-        pRes.textContent = new Date().toUTCString();
-      } else if (cmd === "clear") {
-        output.innerHTML = "";
+        if (cmd === "help") {
+          pRes.textContent = "Available commands: profile, repos, clear, date";
+        } else if (cmd === "profile" || cmd === "whoami") {
+          pRes.textContent = `Active target profile handle: @${activeUsername}`;
+        } else if (cmd === "repos") {
+          pRes.textContent = `Fetching public repository telemetry for @${activeUsername}... Done.`;
+        } else if (cmd === "date") {
+          pRes.textContent = new Date().toUTCString();
+        } else if (cmd === "clear") {
+          output.innerHTML = "";
+          input.value = "";
+          return;
+        } else {
+          pRes.textContent = `command not found: ${cmd}. Type 'help' for options.`;
+        }
+
+        output.appendChild(pRes);
         input.value = "";
-        return;
-      } else {
-        pRes.textContent = `command not found: ${cmd}. Type 'help' for options.`;
+        output.scrollTop = output.scrollHeight;
       }
-
-      output.appendChild(pRes);
-      input.value = "";
-      output.scrollTop = output.scrollHeight;
-    }
-  });
+    });
+  }
 };
