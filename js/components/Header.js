@@ -1,5 +1,5 @@
 /**
- * Formal Navigation Header Component with Site Links and no top search input
+ * Formal Navigation Header Component with Site Links and Profile Avatar
  */
 
 import { toggleTheme } from "../core/theme.js";
@@ -20,10 +20,14 @@ export const renderHeader = (container) => {
         <a href="experience.html" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500;">Experience</a>
       </nav>
 
-      <div class="header-actions" style="display: flex; align-items: center; gap: 1rem;">
+      <div class="header-actions" style="display: flex; align-items: center; gap: 1.25rem;">
         <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme" style="background: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary); padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); cursor: pointer;">
           🌙
         </button>
+        <div class="user-profile-menu" style="display: flex; align-items: center; gap: 0.6rem;">
+          <img src="https://github.com/Yetemare-Yibeltal.png" alt="Metages Yibeltal" class="avatar" id="header-avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color);" />
+          <span class="username" id="header-username" style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">Yetemare-Yibeltal</span>
+        </div>
       </div>
     </header>
   `;
