@@ -3,25 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Engineering Projects - Metages Yibeltal</title>
+  <title>Engineering Projects - DevPlatform</title>
   
-  <!-- Core Stylesheets -->
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/components/navbar.css" />
   <link rel="stylesheet" href="css/components/cards.css" />
-  <link rel="stylesheet" href="css/components/tables.css" />
   <link rel="stylesheet" href="css/components/footer.css" />
 </head>
 <body style="display: flex; flex-direction: column; min-height: 100vh; margin: 0; background-color: var(--bg-primary); color: var(--text-primary);">
   <div id="app-header-root"></div>
   
   <main class="main-content" style="flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; padding: 2rem 1.5rem;">
-    <h1 class="dashboard-title" style="margin-bottom: 0.5rem;">Live GitHub Repositories & Projects</h1>
-    <p class="dashboard-subtitle" style="margin-bottom: 2rem; color: var(--text-secondary);">Real-time full-stack software applications and codebases fetched directly from GitHub (@Yetemare-Yibeltal).</p>
-    
-    <div class="grid-3" id="projects-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
-      <p style="color: var(--text-secondary);">Fetching live repositories from GitHub...</p>
+    <div id="projects-container">
+      <div style="text-align: center; padding: 4rem 1.5rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); max-width: 600px; margin: 2rem auto;">
+        <h2 style="color: var(--text-primary); margin-bottom: 0.75rem;">No GitHub User Selected</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Please enter a GitHub username on the dashboard or search below to view live repositories.</p>
+        <form id="page-search-form" style="display: flex; gap: 0.5rem; max-width: 400px; margin: 0 auto;">
+          <input type="text" id="page-username-input" placeholder="Enter GitHub username..." required style="flex: 1; padding: 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);" />
+          <button type="submit" style="background: var(--accent-blue); color: #0f172a; border: none; padding: 0.6rem 1rem; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer;">Search</button>
+        </form>
+      </div>
     </div>
   </main>
 
@@ -37,26 +39,46 @@
       initTheme();
       renderHeader(document.getElementById('app-header-root'));
 
-      const profileData = await fetchLiveGitHubProfile('Yetemare-Yibeltal');
+      const urlParams = new URLSearchParams(window.location.search);
+      const username = urlParams.get('user') || localStorage.getItem('active_github_user');
+
+      const container = document.getElementById('projects-container');
+
+      if (!username) {
+        renderFooter(document.getElementById('app-footer-root'), {});
+        document.getElementById('page-search-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const val = document.getElementById('page-username-input').value.trim();
+          if (val) {
+            localStorage.setItem('active_github_user', val);
+            window.location.href = `projects.html?user=${val}`;
+          }
+        });
+        return;
+      }
+
+      localStorage.setItem('active_github_user', username);
+      const profileData = await fetchLiveGitHubProfile(username);
       renderFooter(document.getElementById('app-footer-root'), profileData.profile);
 
-      const grid = document.getElementById('projects-grid');
-      if (grid && profileData.repos.length > 0) {
-        grid.innerHTML = profileData.repos.map(repo => `
-          <a href="${repo.url}" target="_blank" class="stat-card" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border-color); background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md);">
-            <div>
-              <h3 style="color: var(--accent-blue); font-size: 1.1rem; margin-bottom: 0.5rem;">${repo.name}</h3>
-              <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4;">${repo.description}</p>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-muted);">
-              <span style="font-weight: 600; color: var(--accent-green);">${repo.language}</span>
-              <span>⭐ ${repo.stars}</span>
-            </div>
-          </a>
-        `).join('');
-      } else {
-        grid.innerHTML = '<p style="color: var(--text-secondary);">No public repositories found.</p>';
-      }
+      container.innerHTML = `
+        <h1 class="dashboard-title" style="margin-bottom: 0.5rem;">Repositories: @${username}</h1>
+        <p class="dashboard-subtitle" style="margin-bottom: 2rem; color: var(--text-secondary);">Live public codebases fetched directly from GitHub.</p>
+        <div class="grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+          ${profileData.repos.map(repo => `
+            <a href="${repo.url}" target="_blank" class="stat-card" style="text-decoration: none; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border-color); background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md);">
+              <div>
+                <h3 style="color: var(--accent-blue); font-size: 1.1rem; margin-bottom: 0.5rem;">${repo.name}</h3>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4;">${repo.description}</p>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-muted);">
+                <span style="font-weight: 600; color: var(--accent-green);">${repo.language}</span>
+                <span>⭐ ${repo.stars}</span>
+              </div>
+            </a>
+          `).join('')}
+        </div>
+      `;
     });
   </script>
 </body>
