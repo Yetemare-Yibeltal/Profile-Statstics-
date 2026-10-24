@@ -1,22 +1,33 @@
 /**
- * Dynamic Dashboard View Controller
+ * Dynamic Dashboard View Controller with Username Prompt State
  */
 
 import { fetchLiveGitHubProfile } from "../services/githubApi.js";
 import { createStatCard } from "../components/StatCard.js";
 import { showToast } from "../features/toast.js";
 
-export const renderDashboard = async (
-  rootElement,
-  targetUsername = "Yetemare-Yibeltal",
-) => {
-  // Safeguard: check if root element exists
-  if (!rootElement) {
-    console.warn("Dashboard root element not found in the DOM.");
+export const renderDashboard = async (rootElement, targetUsername = null) => {
+  rootElement.className = "dashboard-view";
+
+  if (!targetUsername) {
+    rootElement.innerHTML = `
+      <div style="text-align: center; padding: 3rem 1rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+        <h2 style="color: var(--text-primary); margin-bottom: 0.5rem;">GitHub Portfolio & Statistics Platform</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Enter a GitHub username in the top search bar above or click below to load default profile analytics.</p>
+        <button id="load-default-user-btn" style="background: var(--accent-blue); color: #0f172a; padding: 0.6rem 1.2rem; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; border: none;">Load @Yetemare-Yibeltal (Default)</button>
+      </div>
+    `;
+
+    document
+      .getElementById("load-default-user-btn")
+      .addEventListener("click", () => {
+        if (window.refreshAppUI) {
+          window.refreshAppUI("Yetemare-Yibeltal");
+        }
+      });
     return;
   }
 
-  rootElement.className = "dashboard-view";
   rootElement.innerHTML = `
     <div class="dashboard-header">
       <div>
@@ -86,7 +97,7 @@ export const renderDashboard = async (
           <a href="${repo.url}" target="_blank" class="repo-item-card" style="display: flex; justify-content: space-between; padding: 0.75rem; background: var(--bg-primary); border-radius: var(--radius-sm); border: 1px solid var(--border-color); text-decoration: none;">
             <div>
               <strong style="color: var(--accent-blue);">${repo.name}</strong>
-              <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">${repo.description.substring(0, 60)}...</p>
+              <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">${repo.description ? repo.description.substring(0, 60) : "No description."}...</p>
             </div>
             <div style="text-align: right; font-size: 0.8rem; color: var(--text-muted);">
               <span>⭐ ${repo.stars}</span><br/>
